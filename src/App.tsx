@@ -1,6 +1,7 @@
 import { Header } from './components/Header';
 import { ProductList } from './components/ProductList';
 import { useGetProductsQuery } from './graphql/apiVenture';
+import { LoadingScreen } from './shared/Loading';
 
 const App = () => {
   const { data, loading, error } = useGetProductsQuery();
@@ -8,9 +9,11 @@ const App = () => {
 
   return (
     <>
-      <Header></Header>
+      <Header />
       {error && error.message && <p>{error.message}</p>}
-      {loading && <p>Spinning...</p>}
+
+      {loading && <LoadingScreen message="Loading" />}
+
       {!loading && data && <ProductList products={products} />}
     </>
   );

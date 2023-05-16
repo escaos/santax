@@ -2453,6 +2453,15 @@ export type FindProductQuery = {
     slug: string;
     description: string;
     assets: Array<{ __typename?: 'Asset'; id: string; source: string; type: AssetType; preview: string }>;
+    variants: Array<{
+      __typename?: 'ProductVariant';
+      id: string;
+      name: string;
+      price: number;
+      currencyCode: CurrencyCode;
+      priceWithTax: number;
+      stockLevel: string;
+    }>;
   } | null;
 };
 
@@ -2463,6 +2472,15 @@ export type ProductFieldsFragment = {
   slug: string;
   description: string;
   assets: Array<{ __typename?: 'Asset'; id: string; source: string; type: AssetType; preview: string }>;
+  variants: Array<{
+    __typename?: 'ProductVariant';
+    id: string;
+    name: string;
+    price: number;
+    currencyCode: CurrencyCode;
+    priceWithTax: number;
+    stockLevel: string;
+  }>;
 };
 
 export type GetProductsQueryVariables = Exact<{ [key: string]: never }>;
@@ -2478,8 +2496,90 @@ export type GetProductsQuery = {
       slug: string;
       description: string;
       assets: Array<{ __typename?: 'Asset'; id: string; source: string; type: AssetType; preview: string }>;
+      variants: Array<{
+        __typename?: 'ProductVariant';
+        id: string;
+        name: string;
+        price: number;
+        currencyCode: CurrencyCode;
+        priceWithTax: number;
+        stockLevel: string;
+      }>;
     }>;
   };
+};
+
+export type AddItemToOrderMutationVariables = Exact<{
+  productVariantId: Scalars['ID'];
+  quantity: Scalars['Int'];
+}>;
+
+export type AddItemToOrderMutation = {
+  __typename?: 'Mutation';
+  addItemToOrder:
+    | {
+        __typename?: 'Order';
+        id: string;
+        createdAt: any;
+        updatedAt: any;
+        code: string;
+        state: string;
+        total: number;
+        totalWithTax: number;
+        currencyCode: CurrencyCode;
+      }
+    | { __typename?: 'OrderModificationError'; message: string }
+    | { __typename?: 'OrderLimitError'; message: string }
+    | { __typename?: 'NegativeQuantityError'; message: string }
+    | { __typename?: 'InsufficientStockError'; message: string };
+};
+
+export type OrderFieldsFragment = {
+  __typename?: 'Order';
+  id: string;
+  createdAt: any;
+  code: string;
+  state: string;
+  total: number;
+  totalWithTax: number;
+  totalQuantity: number;
+};
+
+export type GetOrderQueryVariables = Exact<{
+  orderId: Scalars['ID'];
+}>;
+
+export type GetOrderQuery = {
+  __typename?: 'Query';
+  order?: {
+    __typename?: 'Order';
+    id: string;
+    createdAt: any;
+    code: string;
+    state: string;
+    total: number;
+    totalWithTax: number;
+    totalQuantity: number;
+  } | null;
+};
+
+export type RemoveAllOrderLinesMutationVariables = Exact<{ [key: string]: never }>;
+
+export type RemoveAllOrderLinesMutation = {
+  __typename?: 'Mutation';
+  removeAllOrderLines:
+    | {
+        __typename: 'Order';
+        id: string;
+        createdAt: any;
+        updatedAt: any;
+        code: string;
+        state: string;
+        total: number;
+        totalWithTax: number;
+        currencyCode: CurrencyCode;
+      }
+    | { __typename: 'OrderModificationError'; message: string };
 };
 
 export const ProductFieldsFragmentDoc = gql`
@@ -2495,6 +2595,25 @@ export const ProductFieldsFragmentDoc = gql`
       type
       preview
     }
+    variants {
+      id
+      name
+      price
+      currencyCode
+      priceWithTax
+      stockLevel
+    }
+  }
+`;
+export const OrderFieldsFragmentDoc = gql`
+  fragment OrderFields on Order {
+    id
+    createdAt
+    code
+    state
+    total
+    totalWithTax
+    totalQuantity
   }
 `;
 export const FindProductDocument = gql`
@@ -2576,3 +2695,155 @@ export function useGetProductsLazyQuery(
 export type GetProductsQueryHookResult = ReturnType<typeof useGetProductsQuery>;
 export type GetProductsLazyQueryHookResult = ReturnType<typeof useGetProductsLazyQuery>;
 export type GetProductsQueryResult = Apollo.QueryResult<GetProductsQuery, GetProductsQueryVariables>;
+export const AddItemToOrderDocument = gql`
+  mutation AddItemToOrder($productVariantId: ID!, $quantity: Int!) {
+    addItemToOrder(productVariantId: $productVariantId, quantity: $quantity) {
+      ... on Order {
+        id
+        createdAt
+        updatedAt
+        code
+        state
+        total
+        totalWithTax
+        currencyCode
+      }
+      ... on OrderModificationError {
+        message
+      }
+      ... on OrderLimitError {
+        message
+      }
+      ... on NegativeQuantityError {
+        message
+      }
+      ... on InsufficientStockError {
+        message
+      }
+    }
+  }
+`;
+export type AddItemToOrderMutationFn = Apollo.MutationFunction<AddItemToOrderMutation, AddItemToOrderMutationVariables>;
+
+/**
+ * __useAddItemToOrderMutation__
+ *
+ * To run a mutation, you first call `useAddItemToOrderMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useAddItemToOrderMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [addItemToOrderMutation, { data, loading, error }] = useAddItemToOrderMutation({
+ *   variables: {
+ *      productVariantId: // value for 'productVariantId'
+ *      quantity: // value for 'quantity'
+ *   },
+ * });
+ */
+export function useAddItemToOrderMutation(
+  baseOptions?: Apollo.MutationHookOptions<AddItemToOrderMutation, AddItemToOrderMutationVariables>
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useMutation<AddItemToOrderMutation, AddItemToOrderMutationVariables>(AddItemToOrderDocument, options);
+}
+export type AddItemToOrderMutationHookResult = ReturnType<typeof useAddItemToOrderMutation>;
+export type AddItemToOrderMutationResult = Apollo.MutationResult<AddItemToOrderMutation>;
+export type AddItemToOrderMutationOptions = Apollo.BaseMutationOptions<
+  AddItemToOrderMutation,
+  AddItemToOrderMutationVariables
+>;
+export const GetOrderDocument = gql`
+  query getOrder($orderId: ID!) {
+    order(id: $orderId) {
+      ...OrderFields
+    }
+  }
+  ${OrderFieldsFragmentDoc}
+`;
+
+/**
+ * __useGetOrderQuery__
+ *
+ * To run a query within a React component, call `useGetOrderQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetOrderQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetOrderQuery({
+ *   variables: {
+ *      orderId: // value for 'orderId'
+ *   },
+ * });
+ */
+export function useGetOrderQuery(baseOptions: Apollo.QueryHookOptions<GetOrderQuery, GetOrderQueryVariables>) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useQuery<GetOrderQuery, GetOrderQueryVariables>(GetOrderDocument, options);
+}
+export function useGetOrderLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetOrderQuery, GetOrderQueryVariables>) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useLazyQuery<GetOrderQuery, GetOrderQueryVariables>(GetOrderDocument, options);
+}
+export type GetOrderQueryHookResult = ReturnType<typeof useGetOrderQuery>;
+export type GetOrderLazyQueryHookResult = ReturnType<typeof useGetOrderLazyQuery>;
+export type GetOrderQueryResult = Apollo.QueryResult<GetOrderQuery, GetOrderQueryVariables>;
+export const RemoveAllOrderLinesDocument = gql`
+  mutation RemoveAllOrderLines {
+    removeAllOrderLines {
+      __typename
+      ... on Order {
+        id
+        createdAt
+        updatedAt
+        code
+        state
+        total
+        totalWithTax
+        currencyCode
+      }
+      ... on OrderModificationError {
+        message
+      }
+    }
+  }
+`;
+export type RemoveAllOrderLinesMutationFn = Apollo.MutationFunction<
+  RemoveAllOrderLinesMutation,
+  RemoveAllOrderLinesMutationVariables
+>;
+
+/**
+ * __useRemoveAllOrderLinesMutation__
+ *
+ * To run a mutation, you first call `useRemoveAllOrderLinesMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useRemoveAllOrderLinesMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [removeAllOrderLinesMutation, { data, loading, error }] = useRemoveAllOrderLinesMutation({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useRemoveAllOrderLinesMutation(
+  baseOptions?: Apollo.MutationHookOptions<RemoveAllOrderLinesMutation, RemoveAllOrderLinesMutationVariables>
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useMutation<RemoveAllOrderLinesMutation, RemoveAllOrderLinesMutationVariables>(
+    RemoveAllOrderLinesDocument,
+    options
+  );
+}
+export type RemoveAllOrderLinesMutationHookResult = ReturnType<typeof useRemoveAllOrderLinesMutation>;
+export type RemoveAllOrderLinesMutationResult = Apollo.MutationResult<RemoveAllOrderLinesMutation>;
+export type RemoveAllOrderLinesMutationOptions = Apollo.BaseMutationOptions<
+  RemoveAllOrderLinesMutation,
+  RemoveAllOrderLinesMutationVariables
+>;

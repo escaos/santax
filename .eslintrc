@@ -19,7 +19,7 @@
     "rules": {
       "react/react-in-jsx-scope": "off",
       "react/jsx-uses-react": "off",
-      "comma-dangle":"warn"
+      "comma-dangle":"off"
     },
   }
   

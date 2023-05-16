@@ -5,6 +5,7 @@ import ReactDOM from 'react-dom';
 import App from './App';
 import './index.css';
 import reportWebVitals from './reportWebVitals';
+import { AppProvider } from './state/AppContext';
 
 const commerceLink = createHttpLink({
   uri: 'https://demo.vendure.io/shop-api/shop-api',
@@ -33,7 +34,9 @@ const client = new ApolloClient({
 ReactDOM.render(
   <React.StrictMode>
     <ApolloProvider client={client}>
-      <App />
+      <AppProvider>
+        <App />
+      </AppProvider>
     </ApolloProvider>
   </React.StrictMode>,
   document.getElementById('root')

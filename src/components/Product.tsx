@@ -1,53 +1,51 @@
 import { memo } from 'react';
-import styled from 'styled-components';
-import { ProductFieldsFragment } from '../graphql/apiVenture';
+import { BiLeftArrow, BiRightArrow } from 'react-icons/bi';
+
+import { Order, ProductFieldsFragment, useAddItemToOrderMutation } from '../graphql/apiVenture';
 import { usePrevNext } from '../hooks/usePrevNext';
+import { formatAmount } from '../shared/utils/amountUtils';
+import { ButtonAddCart, ButtonArrow, Container, Header, Price, PriceButton, Title } from './Product.styles';
+import { useAppContext } from '../state/AppContext';
 
 type ProductProps = ProductFieldsFragment;
 
-const Container = styled.article<{ bgImage: string }>`
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-end;
-  width: 80vw;
-  height: 80vw;
-  background: rgba(255, 255, 255, 0.25) url(${(props) => props.bgImage}) center/cover no-repeat;
-  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
-  backdrop-filter: blur(4px);
-  -webkit-backdrop-filter: blur(4px);
-  border-radius: 10px;
-  border: 1px solid rgba(255, 255, 255, 0.18);
-  padding: 1rem;
-`;
-
-const Title = styled.h3`
-  color: white;
-  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
-  background: linear-gradient(to bottom, transparent, rgba(0, 0, 0, 0.7));
-  padding: 0.5rem;
-`;
-
-const Button = styled.button<{ left?: boolean; right?: boolean }>`
-  position: absolute;
-  top: 50%;
-  ${(props) => (props.left ? 'left: 10px' : '')};
-  ${(props) => (props.right ? 'right: 10px' : '')};
-  /* Additional styles for your buttons */
-`;
-
 const ProductContainer = (props: ProductProps) => {
+  const { storeOrder } = useAppContext();
+  const [addItem, { loading, error }] = useAddItemToOrderMutation({
+    variables: {
+      productVariantId: props.variants[0].id,
+      quantity: 1,
+    },
+  });
   const { assetIdx, onPrevious, onNext } = usePrevNext(props.assets.length);
+  const price = props.variants[0];
+
+  const handleAddCart = async () => {
+    const { data: response } = await addItem({ variables: { productVariantId: price.id, quantity: 1 } });
+
+    if (response) {
+      const order = response.addItemToOrder as Order;
+      storeOrder(order);
+    }
+  };
 
   return (
     <Container bgImage={props.assets[assetIdx]?.preview}>
-      <Title>{props.name}</Title>
-      <Button onClick={onPrevious} left>
-        Prev
-      </Button>
-      <Button onClick={onNext} right>
-        Next
-      </Button>
+      <Header>
+        <Title>{props.name}</Title>
+      </Header>
+      <ButtonArrow onClick={onPrevious} left>
+        <BiLeftArrow />
+      </ButtonArrow>
+      <ButtonArrow onClick={onNext} right>
+        <BiRightArrow />
+      </ButtonArrow>
+
+      <PriceButton>
+        <Price>{formatAmount(price.price, price.currencyCode, 2)}</Price>
+        <ButtonAddCart onClick={handleAddCart}>{loading ? 'Adding...' : 'Add to Cart'}</ButtonAddCart>
+        {error && <p>{error.message}</p>}
+      </PriceButton>
     </Container>
   );
 };

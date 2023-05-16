@@ -9,4 +9,89 @@ fragment ProductFields on Product {
   name
   slug
   description
+  slug
+  assets {
+  	id
+    source
+    type
+    preview
+  }
+  variants {
+    id
+    name
+    price
+    currencyCode
+    priceWithTax
+    stockLevel
+  }
+}
+
+query getProducts {
+  products {
+    items {
+      ...ProductFields
+    }
+  }
+}
+
+mutation AddItemToOrder($productVariantId: ID!, $quantity: Int!) {
+  addItemToOrder(productVariantId: $productVariantId, quantity: $quantity) {
+    ... on Order {
+      id
+      createdAt
+      updatedAt
+      code
+      state
+      total
+      totalWithTax
+      currencyCode
+    }
+    ... on OrderModificationError {
+      message
+    }
+    ... on OrderLimitError {
+      message
+    }
+    ... on NegativeQuantityError {
+      message
+    }
+    ... on InsufficientStockError {
+      message
+    }
+  }
+}
+
+fragment OrderFields on Order {
+  id
+  createdAt
+  code
+  state
+  total
+  totalWithTax
+  totalQuantity
+}
+
+query getOrder($orderId: ID!) {
+  order(id: $orderId) {
+    ...OrderFields
+  }
+}
+
+mutation RemoveAllOrderLines {
+  removeAllOrderLines {
+    __typename
+    ... on Order {
+      id
+      createdAt
+      updatedAt
+      code
+      state
+      total
+      totalWithTax
+      currencyCode
+    }
+    ... on OrderModificationError {
+      message
+    }
+  }
 }

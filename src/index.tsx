@@ -1,9 +1,4 @@
-import {
-  ApolloClient,
-  ApolloLink,
-  createHttpLink,
-  InMemoryCache,
-} from '@apollo/client';
+import { ApolloClient, ApolloLink, createHttpLink, InMemoryCache } from '@apollo/client';
 import { ApolloProvider } from '@apollo/client/react';
 import React from 'react';
 import ReactDOM from 'react-dom';
@@ -14,9 +9,7 @@ import reportWebVitals from './reportWebVitals';
 const commerceLink = createHttpLink({
   uri: 'https://demo.vendure.io/shop-api/shop-api',
   headers: {
-    authorization: localStorage.getItem('Auth-Token')
-      ? `Bearer ${localStorage.getItem('Auth-Token')}`
-      : '',
+    authorization: localStorage.getItem('Auth-Token') ? `Bearer ${localStorage.getItem('Auth-Token')}` : '',
   },
 });
 

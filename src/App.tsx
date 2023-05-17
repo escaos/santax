@@ -14,7 +14,7 @@ const App = () => {
 
       {loading && <LoadingScreen message="Loading" />}
 
-      {!loading && data && <ProductList products={products} />}
+      {!loading && <ProductList products={products} />}
     </>
   );
 };

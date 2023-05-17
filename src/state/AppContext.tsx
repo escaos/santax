@@ -24,13 +24,15 @@ const Context = createContext<ContextProps>({
 
 const ContextProvider = ({ children }: ProviderProps): ReactElement => {
   const [isLoading, setLoading] = useState(true);
-  const { value: order, storeValue, resetValue } = useStateStorage<Order>('order');
-  const [total, setTotal] = useState(order?.total || 0);
+  const { value: orderValue, storeValue, resetValue } = useStateStorage<Order>('order');
+  const [total, setTotal] = useState(orderValue?.total || 0);
+  const [order, setOrder] = useState(orderValue);
 
   const storeOrder = (newOrder?: Order) => {
     if (newOrder) {
       setTotal(newOrder.total);
       storeValue(newOrder);
+      setOrder(newOrder);
       return;
     }
 

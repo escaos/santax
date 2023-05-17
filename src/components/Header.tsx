@@ -60,14 +60,14 @@ const Total = styled.span`
 const Icon = styled(RiShoppingCartLine)``;
 
 export const Header = () => {
-  const { total } = useAppContext();
+  const { order, total } = useAppContext();
   const { value: open, onToggle } = useToggle(false);
 
   return (
     <Container>
       <Img src="https://santex.wpengine.com/wp-content/uploads/2019/02/logo-santex@3x.png" alt="logo" />
       <CartContainer onClick={onToggle}>
-        <Total>{formatAmount(total ?? 0, 'USD', 2)}</Total>
+        <Total>{formatAmount(total ?? 0, order?.currencyCode ?? 'USD', 2)}</Total>
         <Icon />
       </CartContainer>
       {open && total > 0 && <Payment onClose={onToggle} />}

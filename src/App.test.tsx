@@ -6,7 +6,7 @@ describe('ProductList', () => {
   it('renders text and button', async () => {
     render(
       <MockedProvider mocks={[]} addTypename={false}>
-        <ProductList />
+        <ProductList products={[]} />
       </MockedProvider>
     );
 

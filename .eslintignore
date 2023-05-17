@@ -1,0 +1,8 @@
+**/node_modules
+**/public
+**/build
+*.d.ts
+.DS_Store
+.next
+lint-staged.config.js
+
